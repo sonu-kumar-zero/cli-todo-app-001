@@ -5,6 +5,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "build": "npx esbuild index.js --bundle --platform=node --target=node18 --outfile=bundle.js",
+    "pkg-check": "node -e \"try { require.resolve('pkg'); } catch (e) { console.error('pkg is not installed. Run npm install pkg first.'); process.exit(1); }\"",
+    "package": "npm run pkg-check && npm run build && npx pkg bundle.js --targets node18-win-x64 --output todo-app.exe",
     "setup": "node setup.js"
   },
   "bin": {
@@ -21,6 +24,7 @@
   "dependencies": {
     "chalk": "^5.4.1",
     "inquirer": "^12.6.0",
+    "pkg": "^5.8.1",
     "uuid": "^11.1.0"
   }
 }
