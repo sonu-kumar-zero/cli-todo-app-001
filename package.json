@@ -1,0 +1,26 @@
+{
+  "name": "todo-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "setup": "node setup.js"
+  },
+  "bin": {
+    "todo": "./index.js"
+  },
+  "pkg": {
+    "targets": [
+      "node18-win-x64"
+    ]
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^5.4.1",
+    "inquirer": "^12.6.0",
+    "uuid": "^11.1.0"
+  }
+}
