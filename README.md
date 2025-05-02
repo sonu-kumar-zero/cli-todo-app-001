@@ -69,5 +69,5 @@ C:\Users\<YourUsername>\custom-todo-cli\todos-data.json
 - Cloud sync with Firebase/Supabase
 
 ## 🧑‍💻 Author
-Made with ❤️ by (sonu kumar)[https://github.com/sonu-kumar-zero]
+Made with ❤️ by [Sonu Kumar](https://github.com/sonu-kumar-zero)
 
