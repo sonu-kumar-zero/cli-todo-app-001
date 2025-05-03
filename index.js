@@ -114,13 +114,22 @@ function getProiorityColor(todo) {
 // get due date string
 function getDueDateString(todo) {
   const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
   const dueDateStr = todo.dueDate
     ? (() => {
         const due = new Date(todo.dueDate);
         if (isNaN(due.getTime())) return chalk.gray("(Invalid due date)");
-        if (!todo.done && due < now)
+
+        const dueDay = new Date(
+          due.getFullYear(),
+          due.getMonth(),
+          due.getDate()
+        );
+
+        if (!todo.done && dueDay < today)
           return chalk.red(`(Overdue: ${due.toDateString()})`);
+
         return chalk.cyan(`(Due: ${due.toDateString()})`);
       })()
     : chalk.gray("(No due date)");
@@ -193,7 +202,24 @@ async function main() {
       todos.forEach((todo) => {
         if (!todo.priority) todo.priority = "Medium";
       });
-      todos.forEach((todo, i) => {
+      const doneTodos = todos.filter((todo) => todo.done === true);
+      const unDoneTodos = todos.filter((todo) => todo.done === false);
+
+      console.log(chalk.bgRed("todo remains to complete"));
+
+      unDoneTodos.forEach((todo, i) => {
+        const status = todo.done ? chalk.green("[✓]") : chalk.red("[ ]");
+        const priorityColor = getProiorityColor(todo);
+        console.log(
+          `${i + 1}. ${status} ${todo.task} ${chalk.gray(
+            "(Priority:"
+          )} ${priorityColor}${chalk.gray(")")} ${getDueDateString(todo)}`
+        );
+      });
+
+      if (doneTodos.length > 0) console.log(chalk.bgGreen("Completed todos"));
+
+      doneTodos.forEach((todo, i) => {
         const status = todo.done ? chalk.green("[✓]") : chalk.red("[ ]");
         const priorityColor = getProiorityColor(todo);
         console.log(
