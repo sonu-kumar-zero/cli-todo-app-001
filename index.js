@@ -1,140 +1,37 @@
 #!/usr/bin/env node
-import fs from "fs";
 import inquirer from "inquirer";
 import chalk from "chalk";
-import os from "os";
-import path from "path";
 import { v4 as uuid } from "uuid";
-import { setupInit } from "./setup.js";
-import { execSync } from "child_process";
+import { globalLinkCreation } from "./utils/link-setup.js";
+import { initApplication } from "./utils/init-application.js";
+import { saveTodos, loadTodos } from "./utils/todo-file-handler.js";
+import {
+  getDueDateString,
+  getProiorityColor,
+} from "./utils/some-utils-functions.js";
+import { commandLineDirectCommands } from "./utils/direct-command-line.js";
 
-const FILE = path.join(os.homedir(), "custom-todo-cli", "todos-data.json");
+globalLinkCreation();
+initApplication();
 
-// Get the global node_modules path
-function getGlobalNodeModulesPath() {
-  const npmRoot = execSync("npm root -g", { encoding: "utf8" }).trim();
-  return npmRoot;
-}
+commandLineDirectCommands();
 
-// Check if the app is globally linked
-function checkGlobalLink() {
-  const globalPath = getGlobalNodeModulesPath();
-  const todoAppPath = path.join(globalPath, "todo-app");
-
-  // Check if the todo-app exists in the global node_modules directory
-  const isLinked = fs.existsSync(todoAppPath);
-
-  return isLinked;
-}
-
-if (!checkGlobalLink()) {
-  console.log("Running setup.js to link globally...");
-  setupInit();
-} else {
-  console.log("App is already linked globally.");
-}
-
-// init application
-function initApplication() {
-  console.clear();
-  console.log(
-    chalk.bgBlackBright(
-      "------------------------------------------------------------------------------------"
-    )
-  );
-  console.log(
-    chalk.bgBlackBright(
-      "----------------------------------------Welcome-------------------------------------"
-    )
-  );
-  console.log(
-    chalk.bgBlackBright(
-      "------------------------------------------------------------------------------------"
-    )
-  );
-
-  const dir = path.dirname(FILE);
-
-  // Create directory if it doesn't exist
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-
-  // Create file with an empty array if it doesn't exist
-  if (!fs.existsSync(FILE)) {
-    fs.writeFileSync(FILE, JSON.stringify([], null, 2));
-    console.log("Todo file created at:", FILE);
-  }
-
-  const allTodos = loadTodos();
-  const newTodos = allTodos.map((todo) => {
-    const obj = todo;
-    if (!obj.id) {
-      obj.id = uuid();
-    }
-    if (!obj.dueDate) {
-      obj.dueDate = null;
-    }
-    return obj;
-  });
-
-  saveTodos(newTodos);
-}
-
-// Load todos
-function loadTodos() {
-  if (!fs.existsSync(FILE)) return [];
-  return JSON.parse(fs.readFileSync(FILE));
-}
-
-// Save todos
-function saveTodos(todos) {
-  fs.writeFileSync(FILE, JSON.stringify(todos, null, 2));
-}
-
-// get priority color of given todo
-function getProiorityColor(todo) {
-  let priorityColor;
-  switch (todo.priority) {
-    case "High":
-      priorityColor = chalk.red(todo.priority);
-      break;
-    case "Medium":
-      priorityColor = chalk.yellow(todo.priority);
-      break;
-    case "Low":
-      priorityColor = chalk.green(todo.priority);
-      break;
-    default:
-      priorityColor = chalk.white("None");
-  }
-  return priorityColor;
-}
-
-// get due date string
-function getDueDateString(todo) {
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-
-  const dueDateStr = todo.dueDate
-    ? (() => {
-        const due = new Date(todo.dueDate);
-        if (isNaN(due.getTime())) return chalk.gray("(Invalid due date)");
-
-        const dueDay = new Date(
-          due.getFullYear(),
-          due.getMonth(),
-          due.getDate()
-        );
-
-        if (!todo.done && dueDay < today)
-          return chalk.red(`(Overdue: ${due.toDateString()})`);
-
-        return chalk.cyan(`(Due: ${due.toDateString()})`);
-      })()
-    : chalk.gray("(No due date)");
-  return dueDateStr;
-}
+console.clear();
+console.log(
+  chalk.bgBlackBright(
+    "------------------------------------------------------------------------------------"
+  )
+);
+console.log(
+  chalk.bgBlackBright(
+    "----------------------------------------Welcome-------------------------------------"
+  )
+);
+console.log(
+  chalk.bgBlackBright(
+    "------------------------------------------------------------------------------------"
+  )
+);
 
 // Main menu
 async function main() {
@@ -362,5 +259,4 @@ async function main() {
   main();
 }
 
-initApplication();
 main();
