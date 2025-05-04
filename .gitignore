@@ -23,4 +23,6 @@ app-example
 
 # untrack
 bundle.js
+todo.exe
 todo-app.exe
+todo-app-cli.exe

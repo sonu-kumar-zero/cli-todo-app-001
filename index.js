@@ -10,13 +10,18 @@ import {
   getProiorityColor,
 } from "./utils/some-utils-functions.js";
 import { commandLineDirectCommands } from "./utils/direct-command-line.js";
+import { helpSection } from "./utils/directCommands/help.js";
+import { targetPath } from "./utils/link-setup.js";
 
-globalLinkCreation();
-initApplication();
+const exePath = process.execPath;
+
+if (exePath !== targetPath) {
+  globalLinkCreation();
+  initApplication();
+}
 
 commandLineDirectCommands();
 
-console.clear();
 console.log(
   chalk.bgBlackBright(
     "------------------------------------------------------------------------------------"
@@ -49,6 +54,7 @@ async function main() {
         "Mark as Done",
         "Delete Todo",
         "Change Priority",
+        "Help",
         "Exit",
       ],
     },
@@ -247,6 +253,11 @@ async function main() {
       });
       saveTodos(todos);
       console.log(chalk.green(`Todo priority updated to ${newPriority}`));
+      break;
+    }
+
+    case "Help": {
+      helpSection();
       break;
     }
 
